@@ -1,0 +1,406 @@
+/* ==========================================================================
+   Speed Selangor Management System - theme
+   Inspired by the MPKS portal: white header, navy text, orange actions,
+   rounded "pill" buttons. Loaded after Bootstrap in layouts/app.blade.php.
+   ========================================================================== */
+
+:root {
+    --ss-navy: #14284b;        /* headings, menu, footer */
+    --ss-navy-dark: #0c1d38;   /* footer background */
+    --ss-ink: #2b3552;         /* body text */
+    --ss-muted: #667189;       /* secondary text */
+    --ss-orange: #ff4f12;      /* main action buttons */
+    --ss-orange-dark: #e2410a; /* hover */
+    --ss-bg: #f4f6fa;          /* page background */
+    --ss-border: #e3e7ef;
+    --ss-radius: 16px;
+
+    /* Bootstrap variables */
+    --bs-body-font-family: 'Work Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --bs-body-color: var(--ss-ink);
+    --bs-link-color: var(--ss-orange-dark);
+    --bs-link-color-rgb: 226, 65, 10;
+    --bs-link-hover-color: var(--ss-navy);
+    --bs-link-hover-color-rgb: 20, 40, 75;
+    --bs-secondary-color: var(--ss-muted);
+}
+
+body {
+    background: var(--ss-bg);
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    color: var(--ss-navy);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.text-muted {
+    color: var(--ss-muted) !important;
+}
+
+/* ---------------- Header ---------------- */
+
+.ss-header {
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(20, 40, 75, 0.08);
+}
+
+.ss-header .navbar {
+    padding-top: .9rem;
+    padding-bottom: .9rem;
+}
+
+.ss-brand {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    text-decoration: none;
+}
+
+.ss-logo {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--ss-navy);
+    color: #ffb199;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    flex-shrink: 0;
+}
+
+.ss-logo-img {
+    height: 48px;
+    width: auto;
+}
+
+.ss-brand-name {
+    display: block;
+    font-weight: 800;
+    font-size: 1.15rem;
+    line-height: 1.1;
+    color: var(--ss-navy);
+}
+
+.ss-brand-sub {
+    display: block;
+    font-size: .78rem;
+    color: var(--ss-muted);
+}
+
+.ss-nav .nav-link {
+    color: var(--ss-ink);
+    font-weight: 600;
+    padding: .5rem .9rem !important;
+    position: relative;
+}
+
+.ss-nav .nav-link:hover {
+    color: var(--ss-navy);
+}
+
+.ss-nav .nav-link.active {
+    color: var(--ss-navy);
+}
+
+/* Orange underline under the active menu item */
+@media (min-width: 992px) {
+    .ss-nav .nav-link.active::after {
+        content: '';
+        position: absolute;
+        left: .9rem;
+        right: .9rem;
+        bottom: -2px;
+        height: 3px;
+        border-radius: 3px;
+        background: var(--ss-orange);
+    }
+}
+
+.ss-user {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 600;
+    color: var(--ss-navy);
+}
+
+.ss-user small {
+    font-weight: 500;
+    color: var(--ss-muted);
+}
+
+/* ---------------- Buttons ---------------- */
+
+.btn {
+    border-radius: 999px;
+    font-weight: 600;
+    padding: .55rem 1.3rem;
+}
+
+.btn-sm {
+    padding: .35rem .9rem;
+}
+
+.btn-lg {
+    padding: .75rem 1.75rem;
+}
+
+/* Main action = orange (like "Hubungi Kami" on the MPKS portal) */
+.btn-primary {
+    --bs-btn-bg: var(--ss-orange);
+    --bs-btn-border-color: var(--ss-orange);
+    --bs-btn-hover-bg: var(--ss-orange-dark);
+    --bs-btn-hover-border-color: var(--ss-orange-dark);
+    --bs-btn-active-bg: var(--ss-orange-dark);
+    --bs-btn-active-border-color: var(--ss-orange-dark);
+    --bs-btn-disabled-bg: var(--ss-orange);
+    --bs-btn-disabled-border-color: var(--ss-orange);
+    --bs-btn-focus-shadow-rgb: 255, 79, 18;
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--ss-orange-dark);
+    --bs-btn-border-color: var(--ss-orange);
+    --bs-btn-hover-bg: var(--ss-orange);
+    --bs-btn-hover-border-color: var(--ss-orange);
+    --bs-btn-active-bg: var(--ss-orange-dark);
+    --bs-btn-active-border-color: var(--ss-orange-dark);
+}
+
+/* Secondary action = navy */
+.btn-navy,
+.btn-dark {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--ss-navy);
+    --bs-btn-border-color: var(--ss-navy);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--ss-navy-dark);
+    --bs-btn-hover-border-color: var(--ss-navy-dark);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--ss-navy-dark);
+    --bs-btn-active-border-color: var(--ss-navy-dark);
+}
+
+.btn-outline-navy,
+.btn-outline-dark {
+    --bs-btn-color: var(--ss-navy);
+    --bs-btn-border-color: var(--ss-border);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--ss-navy);
+    --bs-btn-hover-border-color: var(--ss-navy);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--ss-navy);
+    --bs-btn-active-border-color: var(--ss-navy);
+}
+
+/* ---------------- Cards, forms, alerts, badges ---------------- */
+
+.card {
+    border: 1px solid var(--ss-border);
+    border-radius: var(--ss-radius);
+    box-shadow: 0 4px 18px rgba(20, 40, 75, 0.06);
+}
+
+.card-header {
+    background: #fff;
+    border-bottom: 1px solid var(--ss-border);
+    font-weight: 700;
+    color: var(--ss-navy);
+}
+
+.card-header:first-child {
+    border-radius: var(--ss-radius) var(--ss-radius) 0 0;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--ss-navy);
+}
+
+.form-control,
+.form-select {
+    border-radius: 12px;
+    padding: .65rem 1rem;
+    border-color: #d6dce7;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--ss-orange);
+    box-shadow: 0 0 0 .2rem rgba(255, 79, 18, .15);
+}
+
+.form-check-input:checked {
+    background-color: var(--ss-orange);
+    border-color: var(--ss-orange);
+}
+
+.alert {
+    border-radius: 12px;
+    border: 0;
+}
+
+.badge {
+    border-radius: 999px;
+    font-weight: 600;
+    padding: .42em .8em;
+}
+
+.table > :not(caption) > * > * {
+    padding: .8rem .75rem;
+}
+
+.table thead th {
+    color: var(--ss-navy);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* Big radio "tiles" (e.g. Individu / Syarikat on the register page) */
+.ss-choice {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    padding: 1rem 1.15rem;
+    border: 2px solid var(--ss-border);
+    border-radius: 14px;
+    cursor: pointer;
+    background: #fff;
+    transition: border-color .15s, background-color .15s;
+}
+
+.ss-choice i {
+    font-size: 1.6rem;
+    color: var(--ss-navy);
+}
+
+.ss-choice strong {
+    display: block;
+    color: var(--ss-navy);
+}
+
+.ss-choice small {
+    display: block;
+    color: var(--ss-muted);
+    line-height: 1.3;
+}
+
+.ss-choice:hover {
+    border-color: #c5cede;
+}
+
+.btn-check:checked + .ss-choice {
+    border-color: var(--ss-orange);
+    background: #fff5f1;
+}
+
+.btn-check:checked + .ss-choice i {
+    color: var(--ss-orange);
+}
+
+.btn-check:focus-visible + .ss-choice {
+    box-shadow: 0 0 0 .2rem rgba(255, 79, 18, .25);
+}
+
+/* ---------------- Dashboard stat cards ---------------- */
+
+.stat-card .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ss-navy);
+    line-height: 1.2;
+    margin-top: .35rem;
+}
+
+.stat-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* ---------------- Hero (login page) ---------------- */
+
+.ss-hero {
+    position: relative;
+    flex: 1 0 auto;            /* fills the screen down to the footer */
+    display: flex;
+    flex-direction: column;
+    padding: 3.5rem 0 0;
+    /* white fade on top, photo below (public/images/hero.jpg), soft blue if no photo */
+    background:
+        linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, .9) 30%, rgba(255, 255, 255, .15) 75%),
+        url('../images/hero.jpg') center 60% / cover no-repeat,
+        linear-gradient(135deg, #e6ecf6 0%, #c7d4ea 100%);
+}
+
+.ss-hero-title {
+    font-size: clamp(2rem, 5vw, 3.6rem);
+    font-weight: 800;
+    color: var(--ss-navy);
+    letter-spacing: -0.02em;
+}
+
+.ss-hero-sub {
+    font-size: 1.1rem;
+    color: var(--ss-ink);
+}
+
+.ss-hero-tagline {
+    font-style: italic;
+    color: var(--ss-muted);
+}
+
+.ss-login-card {
+    border-radius: 20px;
+    box-shadow: 0 18px 40px rgba(12, 29, 56, .18);
+}
+
+/* Navy bar with 3 highlights under the hero (like the MPKS shortcut bar) */
+.ss-feature-bar {
+    background: var(--ss-navy);
+    color: #fff;
+    border-radius: 22px 22px 0 0;
+    margin-top: 3rem;
+}
+
+.ss-feature-bar .col-md-4 + .col-md-4 {
+    border-left: 1px solid rgba(255, 255, 255, .2);
+}
+
+.ss-feature {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .75rem;
+    padding: 1.15rem .5rem;
+    font-weight: 700;
+}
+
+.ss-feature i {
+    font-size: 1.6rem;
+    color: #ffb199;
+}
+
+@media (max-width: 767.98px) {
+    .ss-feature-bar .col-md-4 + .col-md-4 {
+        border-left: 0;
+        border-top: 1px solid rgba(255, 255, 255, .2);
+    }
+}
+
+/* ---------------- Footer ---------------- */
+
+.ss-footer {
+    background: var(--ss-navy-dark);
+    color: rgba(255, 255, 255, .78);
+    font-size: .9rem;
+}
+
+.ss-footer strong {
+    color: #fff;
+}

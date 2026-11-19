@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\ApplicantType;
 use App\Enums\ApplicationStatus as S;
 use App\Enums\PermitType;
 use App\Enums\VendorStatus;
@@ -36,9 +37,10 @@ class SpeedSelangorSeeder extends Seeder
             'role' => 'pegawai',
         ]);
 
-        /* ---------------- Vendors ---------------- */
+        /* ---------------- Vendors (Pemohon) ---------------- */
 
         $vendor = Vendor::create([
+            'applicant_type' => ApplicantType::Company,
             'company_name' => 'Binaan Maju Sdn Bhd',
             'registration_no' => '201901012345',
             'pic_name' => 'Ahmad Faizal bin Rahman',
@@ -50,6 +52,7 @@ class SpeedSelangorSeeder extends Seeder
         ]);
 
         $vendor2 = Vendor::create([
+            'applicant_type' => ApplicantType::Company,
             'company_name' => 'Teguh Jaya Enterprise',
             'registration_no' => 'SA0123456-X',
             'pic_name' => 'Lim Wei Ming',
@@ -61,6 +64,7 @@ class SpeedSelangorSeeder extends Seeder
         ]);
 
         Vendor::create([
+            'applicant_type' => ApplicantType::Company,
             'company_name' => 'Cahaya Bina Resources',
             'registration_no' => '202301045678',
             'pic_name' => 'Siti Hajar binti Osman',
@@ -68,10 +72,11 @@ class SpeedSelangorSeeder extends Seeder
             'no_phone' => '017-2223344',
             'address' => 'No. 5, Jalan Tanjung Karang, 45500 Tanjong Karang, Selangor',
             'password_hash' => 'Vendor@123',
-            'status' => VendorStatus::Pending, // waiting for admin to activate (Step 7)
+            'status' => VendorStatus::Pending, // test account: login shows the "pending" message
         ]);
 
         Vendor::create([
+            'applicant_type' => ApplicantType::Company,
             'company_name' => 'Kontraktor Lama Sdn Bhd',
             'registration_no' => '200801099999',
             'pic_name' => 'Rajesh a/l Kumar',
@@ -80,6 +85,18 @@ class SpeedSelangorSeeder extends Seeder
             'address' => 'No. 3, Jalan Ijok, 45600 Bestari Jaya, Selangor',
             'password_hash' => 'Vendor@123',
             'status' => VendorStatus::Suspended,
+        ]);
+
+        // An individual applicant (homeowner) - no company name / SSM number
+        $individual = Vendor::create([
+            'applicant_type' => ApplicantType::Individual,
+            'pic_name' => 'Mohd Hafiz bin Ismail',
+            'ic_no' => '900101-10-5678',
+            'email' => 'individu@speedselangor.test',
+            'no_phone' => '011-23456789',
+            'address' => 'No. 15, Jalan Melati 3, Taman Melati, 45000 Kuala Selangor, Selangor',
+            'password_hash' => 'Vendor@123',
+            'status' => VendorStatus::Active,
         ]);
 
         /* ---------------- Applications ----------------
@@ -129,6 +146,11 @@ class SpeedSelangorSeeder extends Seeder
             9, [S::Submitted, S::UnderReview, S::Rejected],
             'Lokasi bercanggah dengan Rancangan Tempatan Daerah Kuala Selangor.');
 
+        $this->makeApplication($individual, PermitType::UbahsuaiRumah,
+            'Ubahsuai Bumbung dan Tambahan Bilik',
+            'No. 15, Jalan Melati 3, Taman Melati, 45000 Kuala Selangor',
+            3, [S::Submitted, S::UnderReview]);
+
         /* ---------------- Notifications ---------------- */
 
         $this->notifyVendor($vendor, $actionApp,
@@ -142,7 +164,7 @@ class SpeedSelangorSeeder extends Seeder
         $newest = Application::where('current_status', S::Submitted->value)->latest('submitted_at')->first();
         $this->notifyAdmins($newest,
             'Permohonan Baharu',
-            "Permohonan baharu {$newest->reference_no} telah dihantar oleh {$newest->vendor->company_name}.");
+            "Permohonan baharu {$newest->reference_no} telah dihantar oleh {$newest->vendor->displayName()}.");
     }
 
     /**

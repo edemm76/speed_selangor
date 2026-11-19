@@ -2,11 +2,17 @@
 
 namespace App\Models;
 
+use App\Enums\ApplicantType;
 use App\Enums\VendorStatus;
+use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\RoutesNotifications;
 
+/**
+ * A Pemohon (applicant): an individual or a company.
+ * The table is still called `vendors`, as in the thesis ERD.
+ */
 class Vendor extends Authenticatable
 {
     // RoutesNotifications (not Notifiable) lets us email password-reset links
@@ -17,8 +23,10 @@ class Vendor extends Authenticatable
     protected $primaryKey = 'vendor_id';
 
     protected $fillable = [
+        'applicant_type',
         'company_name',
         'registration_no',
+        'ic_no',
         'pic_name',
         'email',
         'no_phone',
@@ -37,6 +45,7 @@ class Vendor extends Authenticatable
         return [
             'password_hash' => 'hashed', // plain text is hashed automatically on save
             'status' => VendorStatus::class,
+            'applicant_type' => ApplicantType::class,
         ];
     }
 
@@ -46,9 +55,32 @@ class Vendor extends Authenticatable
         return 'password_hash';
     }
 
+    /** Forgot password: e-mail a reset link that opens the applicant reset page */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPasswordNotification($token, 'vendor'));
+    }
+
     public function isActive(): bool
     {
         return $this->status === VendorStatus::Active;
+    }
+
+    public function isCompany(): bool
+    {
+        return $this->applicant_type === ApplicantType::Company;
+    }
+
+    /** Name to show in the UI: company name for companies, person's name for individuals */
+    public function displayName(): string
+    {
+        return $this->isCompany() && $this->company_name ? $this->company_name : $this->pic_name;
+    }
+
+    /** SSM number for companies, IC number for individuals */
+    public function identityNo(): ?string
+    {
+        return $this->isCompany() ? $this->registration_no : $this->ic_no;
     }
 
     /* ---------------- Relationships ---------------- */

@@ -37,10 +37,22 @@ return [
     |
     */
 
-    'guards' => [
+        'guards' => [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
+        ],
+
+        // Speed Selangor: PBT officers / administrators
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'administrators',
+        ],
+
+        // Speed Selangor: vendors (applicants)
+        'vendor' => [
+            'driver' => 'session',
+            'provider' => 'vendors',
         ],
     ],
 
@@ -67,6 +79,15 @@ return [
             'model' => env('AUTH_MODEL', User::class),
         ],
 
+            'administrators' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Administrator::class,
+        ],
+
+        'vendors' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Vendor::class,
+        ],
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
@@ -96,6 +117,21 @@ return [
         'users' => [
             'provider' => 'users',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+
+                // Used in Step 5 (forgot / reset password)
+        'administrators' => [
+            'provider' => 'administrators',
+            'table' => 'password_reset_tokens',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+
+        'vendors' => [
+            'provider' => 'vendors',
+            'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,
         ],

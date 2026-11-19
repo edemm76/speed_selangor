@@ -6,33 +6,50 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Utama') | {{ config('speed.name') }}</title>
 
+    {{-- Font (similar style to the MPKS portal) --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
-    <style>
-        body { background-color: #f5f6f8; }
-        .navbar-brand { font-weight: 600; }
-        .card { border: 0; box-shadow: 0 1px 3px rgba(0, 0, 0, .08); }
-        .stat-card .stat-value { font-size: 1.75rem; font-weight: 600; }
-        .stat-dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
-    </style>
+    {{-- Speed Selangor theme (public/css/speed.css) --}}
+    <link href="{{ asset('css/speed.css') }}?v={{ filemtime(public_path('css/speed.css')) }}" rel="stylesheet">
     @stack('styles')
 </head>
 <body class="d-flex flex-column min-vh-100">
 
     @include('partials.navbar')
 
-    <main class="flex-grow-1 py-4">
-        <div class="container">
-            @include('partials.flash')
-            @yield('content')
-        </div>
-    </main>
+    {{-- Optional full-width banner (used by the login page) --}}
+    @hasSection('hero')
+        @yield('hero')
+    @endif
 
-    <footer class="py-3 bg-white border-top">
-        <div class="container small text-muted d-flex flex-column flex-md-row justify-content-between gap-1">
-            <span>&copy; {{ date('Y') }} {{ config('speed.full_name') }}</span>
-            <span>{{ config('speed.council') }}</span>
+    @hasSection('content')
+        <main class="flex-grow-1 py-4">
+            <div class="container">
+                {{-- Pages with a hero show their own messages inside the hero --}}
+                @unless (View::hasSection('hero'))
+                    @include('partials.flash')
+                @endunless
+
+                @yield('content')
+            </div>
+        </main>
+    @endif
+
+    <footer class="ss-footer py-4">
+        <div class="container d-flex flex-column flex-md-row justify-content-between gap-2">
+            <div>
+                <strong>{{ config('speed.full_name') }}</strong><br>
+                {{ config('speed.council') }}
+            </div>
+            <div class="text-md-end">
+                &copy; {{ date('Y') }} {{ config('speed.name') }}<br>
+                <span class="small">Prototaip sistem untuk kegunaan Pihak Berkuasa Tempatan</span>
+            </div>
         </div>
     </footer>
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\RoutesNotifications;
@@ -39,6 +40,12 @@ class Administrator extends Authenticatable
     public function getAuthPasswordName(): string
     {
         return 'password_hash';
+    }
+
+    /** Forgot password: e-mail a reset link that opens the officer reset page */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPasswordNotification($token, 'admin'));
     }
 
     public function isSuperAdmin(): bool
