@@ -43,18 +43,13 @@
                         <li class="nav-item"><a class="nav-link" href="#">Notifikasi</a></li>
                     </ul>
 
-                    <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 gap-lg-3 mt-3 mt-lg-0">
-                        <span class="ss-user">
-                            <i class="bi bi-person-badge fs-5"></i>
-                            <span>{{ $admin->name }}<br><small>Pegawai PBT</small></span>
-                        </span>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="btn btn-outline-navy btn-sm">
-                                <i class="bi bi-box-arrow-right"></i> Log Keluar
-                            </button>
-                        </form>
-                    </div>
+                    @include('partials.user-menu', [
+                        'name' => $admin->name,
+                        'subtitle' => 'Pegawai PBT',
+                        'icon' => 'bi-person-badge',
+                        'profileUrl' => route('admin.profile.edit'),
+                        'profileActive' => request()->routeIs('admin.profile.*'),
+                    ])
 
                 {{-- ===================== VENDOR / PEMOHON ===================== --}}
                 @elseif ($vendor)
@@ -68,18 +63,13 @@
                         <li class="nav-item"><a class="nav-link" href="#">Notifikasi</a></li>
                     </ul>
 
-                    <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 gap-lg-3 mt-3 mt-lg-0">
-                        <span class="ss-user">
-                            <i class="bi bi-person-circle fs-5"></i>
-                            <span>{{ $vendor->displayName() }}<br><small>Pemohon &middot; {{ $vendor->applicant_type->label() }}</small></span>
-                        </span>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="btn btn-outline-navy btn-sm">
-                                <i class="bi bi-box-arrow-right"></i> Log Keluar
-                            </button>
-                        </form>
-                    </div>
+                    @include('partials.user-menu', [
+                        'name' => $vendor->displayName(),
+                        'subtitle' => 'Pemohon · ' . $vendor->applicant_type->label(),
+                        'icon' => 'bi-person-circle',
+                        'profileUrl' => route('vendor.profile.edit'),
+                        'profileActive' => request()->routeIs('vendor.profile.*'),
+                    ])
 
                 {{-- ===================== GUEST ===================== --}}
                 @else
@@ -89,7 +79,6 @@
                                href="{{ route('login') }}">Log Masuk</a>
                         </li>
                         <li class="nav-item mt-2 mt-lg-0">
-                            {{-- Register page comes in Step 4 --}}
                             <a class="btn btn-primary" href="{{ route('register') }}">Daftar Akaun</a>
                         </li>
                     </ul>

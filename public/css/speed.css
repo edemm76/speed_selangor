@@ -133,6 +133,49 @@ h1, h2, h3, h4, h5, h6,
     color: var(--ss-muted);
 }
 
+/* User menu button (top right, opens Profil Saya / Log Keluar) */
+.ss-user-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .35rem .9rem .35rem .6rem;
+    border: 1px solid var(--ss-border);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--ss-navy);
+    font-weight: 600;
+    line-height: 1.15;
+}
+
+.ss-user-btn small {
+    font-weight: 500;
+    color: var(--ss-muted);
+}
+
+.ss-user-btn:hover,
+.ss-user-btn.show,
+.ss-user-btn.active {
+    border-color: var(--ss-navy);
+    color: var(--ss-navy);
+    background: #fff;
+}
+
+.dropdown-menu {
+    border: 1px solid var(--ss-border);
+    border-radius: 12px;
+    padding: .4rem;
+}
+
+.dropdown-item {
+    border-radius: 8px;
+    padding: .5rem .75rem;
+    font-weight: 500;
+}
+
+.dropdown-item:active {
+    background: var(--ss-navy);
+}
+
 /* ---------------- Buttons ---------------- */
 
 .btn {

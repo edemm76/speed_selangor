@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\Vendor;
 use Illuminate\Support\Facades\Route;
@@ -56,6 +57,11 @@ Route::prefix('vendor')
     ->middleware(['auth:vendor', 'vendor.active'])
     ->group(function () {
         Route::get('/dashboard', [Vendor\DashboardController::class, 'index'])->name('dashboard');
+
+        // SSMS-UC-200: own profile
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
     });
 
 /*
@@ -69,4 +75,9 @@ Route::prefix('admin')
     ->middleware('auth:admin')
     ->group(function () {
         Route::get('/dashboard', [Admin\DashboardController::class, 'index'])->name('dashboard');
+
+        // SSMS-UC-200: own profile
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
     });
