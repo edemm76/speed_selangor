@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,6 +23,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Page numbers (1 2 3 ...) styled with Bootstrap, like the rest of the system
+        Paginator::useBootstrapFive();
+
         // Separate attempt limits for each form, so mistakes on one form
         // never block another (used as throttle:login / register / password in routes/web.php)
 

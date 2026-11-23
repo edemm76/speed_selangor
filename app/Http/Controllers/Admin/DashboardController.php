@@ -20,7 +20,8 @@ class DashboardController extends Controller
             'total' => Application::submitted()->count(),
             'in_progress' => Application::inProgress()->count(),
             'overdue' => Application::overdue()->count(),
-            'pending_vendors' => Vendor::where('status', VendorStatus::Pending)->count(),
+            'vendors' => Vendor::count(),
+            'suspended_vendors' => Vendor::where('status', VendorStatus::Suspended)->count(),
         ];
 
         return view('admin.dashboard', compact('stats'));

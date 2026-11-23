@@ -40,14 +40,17 @@
             </div>
         </div>
         <div class="col-6 col-lg-3">
-            <div class="card stat-card h-100">
+            <a href="{{ route('admin.vendors.index') }}" class="card stat-card h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between text-muted small">
-                        Vendor Menunggu Pengesahan <span class="stat-dot bg-warning"></span>
+                        Jumlah Pemohon <span class="stat-dot bg-warning"></span>
                     </div>
-                    <div class="stat-value">{{ $stats['pending_vendors'] }}</div>
+                    <div class="stat-value">{{ $stats['vendors'] }}</div>
+                    @if ($stats['suspended_vendors'] > 0)
+                        <div class="small text-danger">{{ $stats['suspended_vendors'] }} digantung</div>
+                    @endif
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 

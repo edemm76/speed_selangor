@@ -76,6 +76,12 @@ Route::prefix('admin')
     ->group(function () {
         Route::get('/dashboard', [Admin\DashboardController::class, 'index'])->name('dashboard');
 
+        // SSMS-UC-200: applicant list, suspend / reactivate
+        Route::get('/vendors', [Admin\VendorController::class, 'index'])->name('vendors.index');
+        Route::get('/vendors/{vendor}', [Admin\VendorController::class, 'show'])->name('vendors.show');
+        Route::patch('/vendors/{vendor}/suspend', [Admin\VendorController::class, 'suspend'])->name('vendors.suspend');
+        Route::patch('/vendors/{vendor}/activate', [Admin\VendorController::class, 'activate'])->name('vendors.activate');
+
         // SSMS-UC-200: own profile
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');

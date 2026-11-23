@@ -39,7 +39,10 @@
                         {{-- Links below are filled in by later steps --}}
                         <li class="nav-item"><a class="nav-link" href="#">Permohonan</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Semakan</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Pemohon</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.vendors.*') ? 'active' : '' }}"
+                               href="{{ route('admin.vendors.index') }}">Pemohon</a>
+                        </li>
                         <li class="nav-item"><a class="nav-link" href="#">Notifikasi</a></li>
                     </ul>
 

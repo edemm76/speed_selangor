@@ -349,6 +349,63 @@ h1, h2, h3, h4, h5, h6,
     box-shadow: 0 0 0 .2rem rgba(255, 79, 18, .25);
 }
 
+/* Status tabs above lists (e.g. Semua / Aktif / Digantung) */
+.ss-tabs {
+    gap: .5rem;
+    flex-wrap: wrap;
+}
+
+.ss-tabs .nav-link {
+    border-radius: 999px;
+    border: 1px solid var(--ss-border);
+    background: #fff;
+    color: var(--ss-navy);
+    font-weight: 600;
+    padding: .4rem 1rem;
+}
+
+.ss-tabs .nav-link .badge {
+    background: var(--ss-bg);
+    color: var(--ss-navy);
+    margin-left: .25rem;
+}
+
+.ss-tabs .nav-link.active {
+    background: var(--ss-navy);
+    border-color: var(--ss-navy);
+    color: #fff;
+}
+
+.ss-tabs .nav-link.active .badge {
+    background: rgba(255, 255, 255, .2);
+    color: #fff;
+}
+
+/* Page numbers */
+.pagination {
+    --bs-pagination-color: var(--ss-navy);
+    --bs-pagination-active-bg: var(--ss-navy);
+    --bs-pagination-active-border-color: var(--ss-navy);
+    --bs-pagination-focus-box-shadow: 0 0 0 .2rem rgba(20, 40, 75, .15);
+    margin-bottom: 0;
+}
+
+/* Clickable stat card */
+a.stat-card {
+    text-decoration: none;
+    transition: border-color .15s, transform .15s;
+}
+
+a.stat-card:hover {
+    border-color: var(--ss-navy);
+    transform: translateY(-2px);
+}
+
+.modal-content {
+    border: 0;
+    border-radius: var(--ss-radius);
+}
+
 /* ---------------- Dashboard stat cards ---------------- */
 
 .stat-card .stat-value {
