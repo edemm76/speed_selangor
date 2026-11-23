@@ -67,9 +67,21 @@ class PasswordController extends Controller
             ->with('dev_reset_link', $devLink);
     }
 
-    /** Step 3: form to choose the new password (opened from the e-mail link) */
-    public function edit(Request $request, string $role, string $token): View
+    /**
+     * Step 3: form to choose the new password (opened from the e-mail link).
+     * The link is checked straight away: a used, expired or fake link is
+     * sent back to the forgot-password page instead of showing the form.
+     */
+    public function edit(Request $request, string $role, string $token): View|RedirectResponse
     {
+        $broker = $this->broker($role);
+        $user = $request->query('email') ? $broker->getUser(['email' => $request->query('email')]) : null;
+
+        if (! $user || ! $broker->tokenExists($user, $token)) {
+            return redirect()->route('password.request', ['role' => $role])
+                ->with('error', 'Pautan set semula tidak sah, telah digunakan atau telah tamat tempoh. Sila mohon pautan baharu.');
+        }
+
         return view('auth.reset-password', [
             'role' => $role,
             'token' => $token,
