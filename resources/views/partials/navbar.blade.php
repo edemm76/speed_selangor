@@ -61,8 +61,11 @@
                             <a class="nav-link {{ request()->routeIs('vendor.dashboard') ? 'active' : '' }}"
                                href="{{ route('vendor.dashboard') }}">Papan Pemuka</a>
                         </li>
-                        {{-- Links below are filled in by later steps --}}
-                        <li class="nav-item"><a class="nav-link" href="#">Permohonan Saya</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('vendor.applications.*') ? 'active' : '' }}"
+                               href="{{ route('vendor.applications.index') }}">Permohonan Saya</a>
+                        </li>
+                        {{-- Link below is filled in by a later step --}}
                         <li class="nav-item"><a class="nav-link" href="#">Notifikasi</a></li>
                     </ul>
 

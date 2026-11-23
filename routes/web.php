@@ -58,6 +58,16 @@ Route::prefix('vendor')
     ->group(function () {
         Route::get('/dashboard', [Vendor\DashboardController::class, 'index'])->name('dashboard');
 
+        // SSMS-UC-300: my applications (new, draft, submit)
+        Route::get('/applications', [Vendor\ApplicationController::class, 'index'])->name('applications.index');
+        Route::get('/applications/create', [Vendor\ApplicationController::class, 'create'])->name('applications.create');
+        Route::post('/applications', [Vendor\ApplicationController::class, 'store'])->name('applications.store');
+        Route::get('/applications/{application}/edit', [Vendor\ApplicationController::class, 'edit'])->name('applications.edit');
+        Route::put('/applications/{application}', [Vendor\ApplicationController::class, 'update'])->name('applications.update');
+        Route::delete('/applications/{application}', [Vendor\ApplicationController::class, 'destroy'])->name('applications.destroy');
+        Route::get('/applications/{application}/documents/{document}', [Vendor\ApplicationController::class, 'document'])
+            ->name('applications.document');
+
         // SSMS-UC-200: own profile
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');

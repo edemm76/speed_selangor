@@ -41,9 +41,9 @@ class ApplicationDocument extends Model
             ?? ucwords(str_replace('_', ' ', $this->document_type));
     }
 
-    /** Public URL to open / download the file */
-    public function url(): string
+    /** Delete the stored file (call before deleting or replacing the record) */
+    public function deleteFile(): void
     {
-        return Storage::disk(config('speed.upload.disk'))->url($this->file_path);
+        Storage::disk(config('speed.upload.disk'))->delete($this->file_path);
     }
 }

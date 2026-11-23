@@ -3,13 +3,23 @@
 @section('title', 'Papan Pemuka')
 
 @section('content')
-    <div class="mb-4">
-        <h1 class="h3 mb-0">Papan Pemuka</h1>
-        <p class="text-muted mb-0">
-            {{ $vendor->displayName() }}
-            @if ($vendor->isCompany()) &middot; {{ $vendor->pic_name }} @endif
-            &middot; {{ $vendor->applicant_type->label() }}
-        </p>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-2 mb-4">
+        <div>
+            <h1 class="h3 mb-0">Papan Pemuka</h1>
+            <p class="text-muted mb-0">
+                {{ $vendor->displayName() }}
+                @if ($vendor->isCompany()) &middot; {{ $vendor->pic_name }} @endif
+                &middot; {{ $vendor->applicant_type->label() }}
+            </p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ route('vendor.applications.index') }}" class="btn btn-outline-navy">
+                <i class="bi bi-list-ul"></i> Permohonan Saya
+            </a>
+            <a href="{{ route('vendor.applications.create') }}" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> Permohonan Baharu
+            </a>
+        </div>
     </div>
 
     <div class="row g-3">
@@ -56,6 +66,6 @@
     </div>
 
     <p class="text-muted small mt-4">
-        Senarai permohonan terkini dan butang permohonan baharu akan ditambah kemudian.
+        Senarai permohonan terkini dan carta akan ditambah kemudian.
     </p>
 @endsection

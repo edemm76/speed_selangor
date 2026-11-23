@@ -151,4 +151,21 @@ class Application extends Model
             && $this->current_status !== ApplicationStatus::Draft
             && $this->daysElapsed() > config('speed.target_days');
     }
+
+    /** The uploaded document of one type (e.g. 'geran_tanah'), or null */
+    public function documentFor(string $type): ?ApplicationDocument
+    {
+        return $this->documents->firstWhere('document_type', $type);
+    }
+
+    /**
+     * Required documents (for this permit type) that are not uploaded yet.
+     * Returns ['geran_tanah' => 'Salinan Geran Tanah', ...]. Empty = complete.
+     */
+    public function missingDocuments(): array
+    {
+        $uploaded = $this->documents->pluck('document_type')->all();
+
+        return array_diff_key($this->permit_type->requiredDocuments(), array_flip($uploaded));
+    }
 }

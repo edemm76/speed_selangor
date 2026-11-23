@@ -21,8 +21,10 @@ return [
     'reference_prefix' => 'SS',
 
     // Uploaded documents
+    // 'local' = storage/app/private: files are NOT public, they are only
+    // shown through the system after checking who is logged in.
     'upload' => [
-        'disk' => 'public',
+        'disk' => 'local',
         'max_kb' => 10240, // 10 MB per file
         'mimes' => ['pdf', 'jpg', 'jpeg', 'png'],
     ],
