@@ -25,6 +25,7 @@ use Symfony\Component\HttpFoundation\Response;
  * - My Application list + detail with status timeline [SSMS-REQ-303]
  * - A1 Save Draft [SSMS-REQ-304]
  * - E1 Missing Required File: submission blocked, list of missing documents
+ * - Resubmission after "Tindakan Diperlukan" (SSMS-UC-400 A1, applicant side)
  */
 class ApplicationController extends Controller
 {
@@ -125,6 +126,84 @@ class ApplicationController extends Controller
         return redirect()->route('vendor.applications.index')->with('success', 'Draf permohonan telah dipadam.');
     }
 
+    /**
+     * Resubmission form [SSMS-UC-400 A1, applicant side]:
+     * after the officer asks for more information, the applicant corrects the
+     * details / replaces documents and sends the application back for review.
+     */
+    public function resubmitForm(Application $application): View|RedirectResponse
+    {
+        $this->authorizeOwner($application);
+
+        if ($application->current_status !== ApplicationStatus::ActionRequired) {
+            return redirect()->route('vendor.applications.show', $application)
+                ->with('error', 'Permohonan ini tidak memerlukan tindakan daripada anda.');
+        }
+
+        $application->load(['documents', 'verifications']);
+
+        return view('vendor.applications.resubmit', compact('application'));
+    }
+
+    /** Save the corrections and send the application back to the officer */
+    public function resubmit(Request $request, Application $application): RedirectResponse
+    {
+        $this->authorizeOwner($application);
+
+        if ($application->current_status !== ApplicationStatus::ActionRequired) {
+            return redirect()->route('vendor.applications.show', $application)
+                ->with('error', 'Permohonan ini tidak memerlukan tindakan daripada anda.');
+        }
+
+        $upload = config('speed.upload');
+        $docTypes = array_keys($application->permit_type->requiredDocuments());
+
+        $data = $request->validate([
+            'project_description' => ['required', 'string', 'max:2000'],
+            'site_address' => ['required', 'string', 'max:500'],
+            'latitude' => ['nullable', 'required_with:longitude', 'numeric', 'between:2.5,3.9'],
+            'longitude' => ['nullable', 'required_with:latitude', 'numeric', 'between:100.7,102.0'],
+            'documents' => ['nullable', 'array'],
+            'documents.*' => ['nullable', 'file', 'mimes:' . implode(',', $upload['mimes']), 'max:' . $upload['max_kb']],
+            'response' => ['nullable', 'string', 'max:1000'],
+            'declaration' => ['accepted'],
+        ], $this->messages() + [
+            'response.max' => 'Catatan terlalu panjang (maksimum 1000 aksara).',
+        ], $this->attributes());
+
+        // [E1: Missing Required File] every required document must exist (old file or new upload)
+        $application->load('documents');
+        $missing = collect($application->permit_type->requiredDocuments())
+            ->reject(fn ($label, $type) => $application->documentFor($type) || $request->hasFile("documents.$type"));
+
+        if ($missing->isNotEmpty()) {
+            return back()->withInput($request->except('documents'))
+                ->withErrors(['documents' => 'Dokumen wajib belum dimuat naik: ' . $missing->implode(', ') . '.']);
+        }
+
+        DB::transaction(function () use ($request, $application, $data, $docTypes) {
+            $application->update([
+                'project_description' => $data['project_description'],
+                'site_address' => $data['site_address'],
+                'latitude' => $data['latitude'] ?? null,
+                'longitude' => $data['longitude'] ?? null,
+            ]);
+
+            $this->storeDocuments($request, $application, $docTypes);
+
+            $remarks = 'Permohonan dihantar semula oleh pemohon selepas pembetulan.';
+            if (! empty($data['response'])) {
+                $remarks .= ' Catatan pemohon: ' . $data['response'];
+            }
+
+            // Back to the officer for review (recorded as a change by the applicant)
+            $application->changeStatus(ApplicationStatus::UnderReview, $remarks);
+        });
+
+        return redirect()->route('vendor.applications.show', $application)
+            ->with('success', 'Permohonan ' . $application->reference_no . ' telah dihantar semula kepada pegawai untuk disemak.');
+    }
+
     /** Open one of my uploaded documents (files are private, not on a public link) */
     public function document(Application $application, ApplicationDocument $document): Response
     {
@@ -181,30 +260,7 @@ class ApplicationController extends Controller
                 $old->delete();
             }
 
-            // Store new uploads; a new file replaces the old one of the same type
-            foreach ($docTypes as $type) {
-                $file = $request->file("documents.$type");
-                if (! $file) {
-                    continue;
-                }
-
-                if ($old = $application->documents()->where('document_type', $type)->first()) {
-                    $old->deleteFile();
-                    $old->delete();
-                }
-
-                $path = $file->storeAs(
-                    'applications/' . $application->application_id,
-                    $type . '-' . Str::random(10) . '.' . strtolower($file->getClientOriginalExtension()),
-                    config('speed.upload.disk')
-                );
-
-                $application->documents()->create([
-                    'document_type' => $type,
-                    'file_name' => $file->getClientOriginalName(),
-                    'file_path' => $path,
-                ]);
-            }
+            $this->storeDocuments($request, $application, $docTypes);
         });
 
         $application->load('documents');
@@ -248,6 +304,36 @@ class ApplicationController extends Controller
 
         return redirect()->route('vendor.applications.show', $application)
             ->with('success', 'Permohonan berjaya dihantar. No. rujukan anda: ' . $application->reference_no . '.');
+    }
+
+    /** Store new uploads; a new file replaces the old one of the same type */
+    private function storeDocuments(Request $request, Application $application, array $docTypes): void
+    {
+        foreach ($docTypes as $type) {
+            $file = $request->file("documents.$type");
+            if (! $file) {
+                continue;
+            }
+
+            if ($old = $application->documents()->where('document_type', $type)->first()) {
+                $old->deleteFile();
+                $old->delete();
+            }
+
+            $path = $file->storeAs(
+                'applications/' . $application->application_id,
+                $type . '-' . Str::random(10) . '.' . strtolower($file->getClientOriginalExtension()),
+                config('speed.upload.disk')
+            );
+
+            $application->documents()->create([
+                'document_type' => $type,
+                'file_name' => $file->getClientOriginalName(),
+                'file_path' => $path,
+            ]);
+        }
+
+        $application->unsetRelation('documents');
     }
 
     private function messages(): array

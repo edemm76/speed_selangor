@@ -69,6 +69,10 @@ Route::prefix('vendor')
         Route::get('/applications/{application}/documents/{document}', [Vendor\ApplicationController::class, 'document'])
             ->name('applications.document');
 
+        // SSMS-UC-400 A1 (applicant side): correct and resubmit after "Tindakan Diperlukan"
+        Route::get('/applications/{application}/resubmit', [Vendor\ApplicationController::class, 'resubmitForm'])->name('applications.resubmit');
+        Route::put('/applications/{application}/resubmit', [Vendor\ApplicationController::class, 'resubmit'])->name('applications.resubmit.store');
+
         // SSMS-UC-200: own profile
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -93,6 +97,12 @@ Route::prefix('admin')
         Route::patch('/applications/{application}/status', [Admin\ApplicationController::class, 'updateStatus'])->name('applications.status');
         Route::get('/applications/{application}/documents/{document}', [Admin\ApplicationController::class, 'document'])
             ->name('applications.document');
+
+        // SSMS-UC-400: verification queue, verify, request more info / forward
+        Route::get('/verifications', [Admin\VerificationController::class, 'index'])->name('verifications.index');
+        Route::post('/verifications/{application}/start', [Admin\VerificationController::class, 'start'])->name('verifications.start');
+        Route::get('/verifications/{application}', [Admin\VerificationController::class, 'show'])->name('verifications.show');
+        Route::post('/verifications/{application}', [Admin\VerificationController::class, 'store'])->name('verifications.store');
 
         // SSMS-UC-200: applicant list, suspend / reactivate
         Route::get('/vendors', [Admin\VendorController::class, 'index'])->name('vendors.index');

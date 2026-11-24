@@ -74,6 +74,11 @@
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     @else
+                                        @if ($app->current_status === \App\Enums\ApplicationStatus::ActionRequired)
+                                            <a href="{{ route('vendor.applications.resubmit', $app) }}" class="btn btn-sm btn-danger">
+                                                <i class="bi bi-pencil-square"></i> Kemas Kini
+                                            </a>
+                                        @endif
                                         <a href="{{ route('vendor.applications.show', $app) }}" class="btn btn-sm btn-outline-navy">
                                             Lihat <i class="bi bi-chevron-right"></i>
                                         </a>

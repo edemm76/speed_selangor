@@ -73,10 +73,28 @@
             <h1 class="h3 mb-0 mt-1">{{ $application->reference_no }}</h1>
             <p class="text-muted mb-0">{{ $application->project_title }}</p>
         </div>
-        <div class="fs-5">{!! $status->badge() !!}</div>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <span class="fs-5">{!! $status->badge() !!}</span>
+            @if ($status === \App\Enums\ApplicationStatus::Submitted)
+                <form method="POST" action="{{ route('admin.verifications.start', $application) }}">
+                    @csrf
+                    <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-play-fill"></i> Mula Semak</button>
+                </form>
+            @elseif ($status === \App\Enums\ApplicationStatus::UnderReview)
+                <a href="{{ route('admin.verifications.show', $application) }}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-clipboard-check"></i> Buka Semakan
+                </a>
+            @endif
+        </div>
     </div>
 
-    @if ($status === \App\Enums\ApplicationStatus::ActionRequired)
+    @if ($application->isResubmitted())
+        <div class="alert alert-warning">
+            <i class="bi bi-arrow-repeat"></i> Pemohon telah <strong>menghantar semula</strong> permohonan ini pada
+            {{ $application->statusHistories->last()->created_at->format('d/m/Y, h:i A') }}.
+            Sila <a href="{{ route('admin.verifications.show', $application) }}" class="alert-link">buka semakan</a> untuk menyemak pembetulan.
+        </div>
+    @elseif ($status === \App\Enums\ApplicationStatus::ActionRequired)
         <div class="alert alert-warning">
             <i class="bi bi-hourglass-split"></i> Menunggu tindakan pemohon.
             Catatan terakhir: <strong>{{ $latestNote?->notes ?? '—' }}</strong>
@@ -195,6 +213,9 @@
                                     <a href="{{ route('admin.applications.document', [$application, $doc]) }}"
                                        target="_blank" rel="noopener">{{ $doc->file_name }}</a>
                                     <span class="text-muted">&middot; {{ $doc->uploaded_at?->format('d/m/Y') }}</span>
+                                    @if ($application->isDocumentUpdated($doc))
+                                        <span class="badge bg-info-subtle text-info-emphasis">Dikemas kini</span>
+                                    @endif
                                 </span>
                             @else
                                 <span class="small text-muted"><i class="bi bi-dash-circle"></i> Tiada fail</span>

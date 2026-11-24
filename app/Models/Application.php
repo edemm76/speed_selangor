@@ -99,6 +99,18 @@ class Application extends Model
             ->where('submitted_at', '<', now()->subDays(config('speed.target_days')));
     }
 
+    /**
+     * Under review again because the applicant resubmitted after "Tindakan Diperlukan":
+     * the latest status history row was made by the applicant (no officer ID).
+     */
+    public function scopeResubmitted(Builder $query): Builder
+    {
+        return $query->where('current_status', ApplicationStatus::UnderReview->value)
+            ->whereRaw('(select h.updated_by_admin_id from application_status_histories h
+                         where h.application_id = applications.application_id
+                         order by h.created_at desc, h.status_id desc limit 1) is null');
+    }
+
     /* ---------------- Helpers ---------------- */
 
     /** Next reference number for this year, e.g. SS-2026-0001 */
@@ -169,6 +181,32 @@ class Application extends Model
             && ! $this->current_status->isFinal()
             && $this->current_status !== ApplicationStatus::Draft
             && $this->daysElapsed() > config('speed.target_days');
+    }
+
+    /** When the officer last asked for more information (null if never) */
+    public function actionRequestedAt(): ?\Illuminate\Support\Carbon
+    {
+        return $this->verifications
+            ->firstWhere('decision', ApplicationStatus::ActionRequired)?->created_at;
+    }
+
+    /** True when the applicant has resubmitted and the officer has not acted yet */
+    public function isResubmitted(): bool
+    {
+        $latest = $this->statusHistories->last();
+
+        return $this->current_status === ApplicationStatus::UnderReview
+            && $latest !== null
+            && $latest->updated_by_admin_id === null
+            && $latest->status === ApplicationStatus::UnderReview;
+    }
+
+    /** True when this document was uploaded again after the officer's last request */
+    public function isDocumentUpdated(ApplicationDocument $document): bool
+    {
+        $requestedAt = $this->actionRequestedAt();
+
+        return $requestedAt !== null && $document->uploaded_at?->gt($requestedAt);
     }
 
     /** The uploaded document of one type (e.g. 'geran_tanah'), or null */

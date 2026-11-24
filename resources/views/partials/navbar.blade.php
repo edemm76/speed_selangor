@@ -40,12 +40,15 @@
                             <a class="nav-link {{ request()->routeIs('admin.applications.*') ? 'active' : '' }}"
                                href="{{ route('admin.applications.index') }}">Permohonan</a>
                         </li>
-                        {{-- Links below are filled in by later steps --}}
-                        <li class="nav-item"><a class="nav-link" href="#">Semakan</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.verifications.*') ? 'active' : '' }}"
+                               href="{{ route('admin.verifications.index') }}">Semakan</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.vendors.*') ? 'active' : '' }}"
                                href="{{ route('admin.vendors.index') }}">Pemohon</a>
                         </li>
+                        {{-- Link below is filled in by a later step --}}
                         <li class="nav-item"><a class="nav-link" href="#">Notifikasi</a></li>
                     </ul>
 

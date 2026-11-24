@@ -75,7 +75,13 @@
         <div class="alert alert-danger">
             <div class="fw-semibold"><i class="bi bi-exclamation-triangle-fill"></i> Tindakan diperlukan daripada anda</div>
             <div class="mt-1">{{ $latestNote?->notes ?? 'Pegawai memerlukan maklumat tambahan.' }}</div>
-            <div class="small mt-1">Sila hubungi pihak PBT jika memerlukan penjelasan lanjut.</div>
+            <a href="{{ route('vendor.applications.resubmit', $application) }}" class="btn btn-danger btn-sm mt-2">
+                <i class="bi bi-pencil-square"></i> Kemas Kini &amp; Hantar Semula
+            </a>
+        </div>
+    @elseif ($application->isResubmitted())
+        <div class="alert alert-info">
+            <i class="bi bi-arrow-repeat"></i> Permohonan anda telah <strong>dihantar semula</strong> dan sedang menunggu semakan pegawai.
         </div>
     @elseif ($status === \App\Enums\ApplicationStatus::Approved)
         <div class="alert alert-success">
@@ -160,6 +166,9 @@
                                     <a href="{{ route('vendor.applications.document', [$application, $doc]) }}"
                                        target="_blank" rel="noopener">{{ $doc->file_name }}</a>
                                     <span class="text-muted">&middot; {{ $doc->uploaded_at?->format('d/m/Y') }}</span>
+                                    @if ($application->isDocumentUpdated($doc))
+                                        <span class="badge bg-info-subtle text-info-emphasis">Dikemas kini</span>
+                                    @endif
                                 </span>
                             @else
                                 <span class="small text-muted"><i class="bi bi-dash-circle"></i> Tiada fail</span>
