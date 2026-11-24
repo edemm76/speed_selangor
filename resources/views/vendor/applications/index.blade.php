@@ -40,7 +40,11 @@
                             @php $isDraft = $app->current_status === \App\Enums\ApplicationStatus::Draft; @endphp
                             <tr>
                                 <td class="fw-semibold text-nowrap">
-                                    {{ $app->reference_no ?? '—' }}
+                                    @if ($isDraft)
+                                        —
+                                    @else
+                                        <a href="{{ route('vendor.applications.show', $app) }}" class="text-decoration-none">{{ $app->reference_no }}</a>
+                                    @endif
                                 </td>
                                 <td>
                                     {{ $app->project_title }}
@@ -70,8 +74,9 @@
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     @else
-                                        {{-- Detail page comes in the next step --}}
-                                        <span class="text-muted small">—</span>
+                                        <a href="{{ route('vendor.applications.show', $app) }}" class="btn btn-sm btn-outline-navy">
+                                            Lihat <i class="bi bi-chevron-right"></i>
+                                        </a>
                                     @endif
                                 </td>
                             </tr>

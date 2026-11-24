@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
  * SSMS-UC-300 Manage Application (Vendor part)
  * - New Application form [SSMS-REQ-301]
  * - Submit -> reference number + success message [SSMS-REQ-302]
- * - My Application list [SSMS-REQ-303]
+ * - My Application list + detail with status timeline [SSMS-REQ-303]
  * - A1 Save Draft [SSMS-REQ-304]
  * - E1 Missing Required File: submission blocked, list of missing documents
  */
@@ -54,6 +54,24 @@ class ApplicationController extends Controller
             ->paginate(10);
 
         return view('vendor.applications.index', compact('applications'));
+    }
+
+    /**
+     * Application detail [SSMS-REQ-303]: progress, processing days,
+     * documents, officer notes and the full status timeline.
+     * Drafts have no detail page yet, so they open the edit form.
+     */
+    public function show(Application $application): View|RedirectResponse
+    {
+        $this->authorizeOwner($application);
+
+        if ($application->current_status === ApplicationStatus::Draft) {
+            return redirect()->route('vendor.applications.edit', $application);
+        }
+
+        $application->load(['documents', 'statusHistories.admin', 'verifications.admin']);
+
+        return view('vendor.applications.show', compact('application'));
     }
 
     /** New application form */
@@ -113,7 +131,10 @@ class ApplicationController extends Controller
         $this->authorizeOwner($application);
         abort_unless((int) $document->application_id === (int) $application->application_id, 404);
 
-        return Storage::disk(config('speed.upload.disk'))->response($document->file_path, $document->file_name);
+        $disk = Storage::disk(config('speed.upload.disk'));
+        abort_unless($disk->exists($document->file_path), 404);
+
+        return $disk->response($document->file_path, $document->file_name);
     }
 
     /**
@@ -225,7 +246,7 @@ class ApplicationController extends Controller
             $application->changeStatus(ApplicationStatus::Submitted, 'Permohonan dihantar oleh pemohon.');
         });
 
-        return redirect()->route('vendor.applications.index')
+        return redirect()->route('vendor.applications.show', $application)
             ->with('success', 'Permohonan berjaya dihantar. No. rujukan anda: ' . $application->reference_no . '.');
     }
 

@@ -132,10 +132,29 @@ class Application extends Model
         ]);
     }
 
-    /** Whole days since submission (0 for drafts) */
+    /**
+     * When the final decision (approved / rejected) was made, or null if not decided yet.
+     * Uses the status history, so it also works for applications from the seeder.
+     */
+    public function decidedAt(): ?\Illuminate\Support\Carbon
+    {
+        if (! $this->current_status->isFinal()) {
+            return null;
+        }
+
+        return $this->statusHistories
+            ->where('status', $this->current_status)
+            ->last()?->created_at;
+    }
+
+    /** Whole days since submission (0 for drafts). Stops counting once a decision is made. */
     public function daysElapsed(): int
     {
-        return $this->submitted_at ? (int) $this->submitted_at->diffInDays(now()) : 0;
+        if (! $this->submitted_at) {
+            return 0;
+        }
+
+        return (int) $this->submitted_at->diffInDays($this->decidedAt() ?? now());
     }
 
     /** Days left before the target (negative = overdue) */

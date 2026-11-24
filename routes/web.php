@@ -58,10 +58,11 @@ Route::prefix('vendor')
     ->group(function () {
         Route::get('/dashboard', [Vendor\DashboardController::class, 'index'])->name('dashboard');
 
-        // SSMS-UC-300: my applications (new, draft, submit)
+        // SSMS-UC-300: my applications (list, detail, new, draft, submit)
         Route::get('/applications', [Vendor\ApplicationController::class, 'index'])->name('applications.index');
         Route::get('/applications/create', [Vendor\ApplicationController::class, 'create'])->name('applications.create');
         Route::post('/applications', [Vendor\ApplicationController::class, 'store'])->name('applications.store');
+        Route::get('/applications/{application}', [Vendor\ApplicationController::class, 'show'])->name('applications.show');
         Route::get('/applications/{application}/edit', [Vendor\ApplicationController::class, 'edit'])->name('applications.edit');
         Route::put('/applications/{application}', [Vendor\ApplicationController::class, 'update'])->name('applications.update');
         Route::delete('/applications/{application}', [Vendor\ApplicationController::class, 'destroy'])->name('applications.destroy');
