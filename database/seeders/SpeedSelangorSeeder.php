@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Enums\ApplicantType;
 use App\Enums\ApplicationStatus as S;
+use App\Enums\MeetingResult;
 use App\Enums\PermitType;
 use App\Enums\VendorStatus;
 use App\Models\Administrator;
@@ -140,16 +141,21 @@ class SpeedSelangorSeeder extends Seeder
             'Lot 99, Kampung Kuantan, 45000 Kuala Selangor',
             18, [S::Submitted, S::UnderReview]); // overdue
 
-        $this->makeApplication($vendor2, PermitType::KebenaranMerancang,
+        $rejectedApp = $this->makeApplication($vendor2, PermitType::KebenaranMerancang,
             'Cadangan Stesen Minyak di Tanah Pertanian',
             'Lot 1500, Jalan Kuala Selangor - Sabak Bernam',
-            9, [S::Submitted, S::UnderReview, S::Rejected],
-            'Lokasi bercanggah dengan Rancangan Tempatan Daerah Kuala Selangor.');
+            9, [S::Submitted, S::UnderReview, S::Verified, S::Rejected]);
 
         $this->makeApplication($individual, PermitType::UbahsuaiRumah,
             'Ubahsuai Bumbung dan Tambahan Bilik',
             'No. 15, Jalan Melati 3, Taman Melati, 45000 Kuala Selangor',
             3, [S::Submitted, S::UnderReview]);
+
+        /* ---------------- Committee meeting decisions ---------------- */
+
+        $this->addMeetingDecision($approvedApp, MeetingResult::Lulus, 'Mesyuarat Jawatankuasa OSC Bil. 21/2026');
+        $this->addMeetingDecision($rejectedApp, MeetingResult::Ditolak, 'Mesyuarat Jawatankuasa OSC Bil. 22/2026',
+            reason: 'Cadangan bercanggah dengan zon guna tanah pertanian dalam Rancangan Tempatan Daerah Kuala Selangor.');
 
         /* ---------------- Notifications ---------------- */
 
@@ -159,7 +165,14 @@ class SpeedSelangorSeeder extends Seeder
 
         $this->notifyVendor($vendor, $approvedApp,
             'Permohonan Diluluskan',
-            "Tahniah! Permohonan {$approvedApp->reference_no} telah diluluskan.");
+            "Keputusan bagi permohonan {$approvedApp->reference_no} telah dibuat dalam {$approvedApp->meetingDecision->meeting_title}.\n\n"
+            . "Keputusan: Lulus\nDiputuskan oleh: {$approvedApp->meetingDecision->approver()}");
+
+        $this->notifyVendor($vendor2, $rejectedApp,
+            'Permohonan Ditolak',
+            "Keputusan bagi permohonan {$rejectedApp->reference_no} telah dibuat dalam {$rejectedApp->meetingDecision->meeting_title}.\n\n"
+            . "Keputusan: Ditolak\nDiputuskan oleh: {$rejectedApp->meetingDecision->approver()}\n\n"
+            . "Sebab penolakan: {$rejectedApp->meetingDecision->reason}");
 
         $newest = Application::where('current_status', S::Submitted->value)->latest('submitted_at')->first();
         $this->notifyAdmins($newest,
@@ -226,6 +239,37 @@ class SpeedSelangorSeeder extends Seeder
         }
 
         return $application;
+    }
+
+    /**
+     * Meeting record for a decided application (held on the day of its final status),
+     * and use the meeting summary as the final timeline remark.
+     */
+    private function addMeetingDecision(Application $application, MeetingResult $result, string $title, ?string $reason = null, ?string $amendments = null): void
+    {
+        $final = $application->statusHistories()->reorder()->orderByDesc('created_at')->orderByDesc('status_id')->first();
+
+        $decision = $application->meetingDecision()->forceCreate([
+            'application_id' => $application->application_id,
+            'meeting_title' => $title,
+            'meeting_date' => $final->created_at->toDateString(),
+            'department' => config('speed.meeting.department'),
+            'checked_by' => $this->officer->name . ' (Penolong Pegawai Perancang Bandar)',
+            'approver_name' => 'Tuan Haji Kamal bin Hassan',
+            'approver_position' => 'Pengerusi Jawatankuasa OSC',
+            'result' => $result->value,
+            'reason' => $reason,
+            'amendments' => $amendments,
+            'minutes_summary' => $result === MeetingResult::Ditolak
+                ? 'Jawatankuasa membincangkan kertas pertimbangan dan memutuskan untuk menolak permohonan atas sebab yang dinyatakan.'
+                : 'Jawatankuasa meneliti kertas pertimbangan dan bersetuju permohonan mematuhi keperluan perancangan.',
+            'recorded_by_admin_id' => $this->officer->admin_id,
+            'created_at' => $final->created_at,
+            'updated_at' => $final->created_at,
+        ]);
+
+        $final->update(['remarks' => $decision->summaryLine()]);
+        $application->setRelation('meetingDecision', $decision);
     }
 
     private function defaultRemark(S $status): string

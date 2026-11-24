@@ -61,17 +61,19 @@ enum ApplicationStatus: string
     }
 
     /**
-     * Statuses an officer may change this application to (SSMS-UC-300 officer part).
-     * Submitted -> Dalam Semakan -> Tindakan Diperlukan / Disahkan -> Diluluskan / Ditolak.
-     * Draft, Approved and Rejected cannot be changed by the officer.
+     * Statuses an officer may choose in the "Kemas Kini Status" panel (SSMS-UC-300 officer part).
+     * - "Tindakan Diperlukan" and "Disahkan" are only set through the verification
+     *   checklist (Semakan menu), so the checklist can never be skipped.
+     * - "Diluluskan" / "Ditolak" after verification are only set by recording the
+     *   committee meeting decision (Rekod Keputusan Mesyuarat).
+     * - The officer may still reject early (e.g. not complying), with a compulsory reason.
      */
     public function nextForOfficer(): array
     {
         return match ($this) {
             self::Submitted => [self::UnderReview, self::Rejected],
-            self::UnderReview => [self::ActionRequired, self::Verified, self::Rejected],
+            self::UnderReview => [self::Rejected],
             self::ActionRequired => [self::UnderReview, self::Rejected],
-            self::Verified => [self::Approved, self::Rejected],
             default => [],
         };
     }

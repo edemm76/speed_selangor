@@ -5,6 +5,7 @@
     $target = config('speed.target_days');
     $days = $application->daysElapsed();
     $decidedAt = $application->decidedAt();
+    $decision = $application->meetingDecision;
     $latestNote = $application->verifications->first(); // newest officer verification
 
     // Progress tracker: 4 stages. "Tindakan Diperlukan" sits on stage 2, the decision on stage 4.
@@ -19,7 +20,7 @@
         ['label' => $status === \App\Enums\ApplicationStatus::ActionRequired ? 'Tindakan Diperlukan' : 'Dalam Semakan',
          'icon' => $status === \App\Enums\ApplicationStatus::ActionRequired ? 'bi-exclamation-lg' : 'bi-search'],
         ['label' => 'Disahkan', 'icon' => 'bi-patch-check'],
-        ['label' => $status->isFinal() ? $status->label() : 'Keputusan',
+        ['label' => $decision ? $decision->result->label() : ($status->isFinal() ? $status->label() : 'Keputusan'),
          'icon' => $status === \App\Enums\ApplicationStatus::Rejected ? 'bi-x-lg' : 'bi-award'],
     ];
     // Colour of the current stage
@@ -83,15 +84,24 @@
         <div class="alert alert-info">
             <i class="bi bi-arrow-repeat"></i> Permohonan anda telah <strong>dihantar semula</strong> dan sedang menunggu semakan pegawai.
         </div>
+    @elseif ($status === \App\Enums\ApplicationStatus::Verified)
+        <div class="alert alert-primary">
+            <i class="bi bi-people"></i> Permohonan anda telah <strong>disahkan</strong> dan akan dibawa ke mesyuarat untuk keputusan.
+        </div>
     @elseif ($status === \App\Enums\ApplicationStatus::Approved)
         <div class="alert alert-success">
-            <i class="bi bi-award-fill"></i> Tahniah! Permohonan anda telah <strong>diluluskan</strong>
-            pada {{ $decidedAt?->format('d/m/Y') }}.
+            <i class="bi bi-award-fill"></i> Tahniah! Permohonan anda telah
+            <strong>{{ $decision?->result === \App\Enums\MeetingResult::LulusDenganPindaan ? 'diluluskan dengan pindaan' : 'diluluskan' }}</strong>
+            pada {{ ($decision?->meeting_date ?? $decidedAt)?->format('d/m/Y') }}.
+            @if ($decision?->amendments)
+                Sila rujuk pindaan yang diperlukan di bawah.
+            @endif
         </div>
     @elseif ($status === \App\Enums\ApplicationStatus::Rejected)
         <div class="alert alert-secondary">
             <i class="bi bi-x-circle-fill"></i> Permohonan anda telah <strong>ditolak</strong>
-            pada {{ $decidedAt?->format('d/m/Y') }}. Sila rujuk catatan pegawai dalam Sejarah Status.
+            pada {{ ($decision?->meeting_date ?? $decidedAt)?->format('d/m/Y') }}.
+            <div class="mt-1"><strong>Sebab:</strong> {{ $decision?->reason ?? $application->statusHistories->last()?->remarks }}</div>
         </div>
     @endif
 
@@ -151,6 +161,10 @@
                     </dl>
                 </div>
             </div>
+
+            @if ($decision)
+                @include('partials.meeting-decision', ['decision' => $decision, 'forOfficer' => false])
+            @endif
 
             {{-- Documents --}}
             <div class="card mb-3">

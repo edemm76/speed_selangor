@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Application extends Model
 {
@@ -67,6 +68,12 @@ class Application extends Model
     {
         return $this->hasMany(Report::class, 'application_id', 'application_id')
             ->latest('generated_at');
+    }
+
+    /** Committee meeting decision (recorded after the application is verified) */
+    public function meetingDecision(): HasOne
+    {
+        return $this->hasOne(MeetingDecision::class, 'application_id', 'application_id');
     }
 
     public function userNotifications(): HasMany

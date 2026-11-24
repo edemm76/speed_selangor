@@ -35,7 +35,7 @@
     @if ($tab === 'waiting_vendor')
         <p class="small text-muted"><i class="bi bi-info-circle"></i> Permohonan ini sedang menunggu pemohon mengemukakan maklumat tambahan. Ia akan kembali ke tab <strong>Dihantar Semula</strong> apabila pemohon menghantar semula.</p>
     @elseif ($tab === 'verified')
-        <p class="small text-muted"><i class="bi bi-info-circle"></i> Permohonan ini telah disahkan. Buka permohonan untuk membuat keputusan (Diluluskan / Ditolak).</p>
+        <p class="small text-muted"><i class="bi bi-info-circle"></i> Permohonan ini telah disahkan dan dibawa ke mesyuarat. Selepas mesyuarat, klik <strong>Rekod Keputusan</strong> untuk merekod keputusan (Lulus / Lulus dengan Pindaan / Ditolak).</p>
     @endif
 
     <div class="card">
@@ -91,6 +91,10 @@
                                 @elseif ($status === \App\Enums\ApplicationStatus::UnderReview)
                                     <a href="{{ route('admin.verifications.show', $app) }}" class="btn btn-primary btn-sm">
                                         <i class="bi bi-clipboard-check"></i> Semak
+                                    </a>
+                                @elseif ($status === \App\Enums\ApplicationStatus::Verified)
+                                    <a href="{{ route('admin.meetings.create', $app) }}" class="btn btn-primary btn-sm">
+                                        <i class="bi bi-people"></i> Rekod Keputusan
                                     </a>
                                 @else
                                     <a href="{{ route('admin.applications.show', $app) }}" class="btn btn-outline-navy btn-sm">

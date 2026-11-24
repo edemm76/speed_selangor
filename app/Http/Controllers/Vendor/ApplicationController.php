@@ -70,7 +70,7 @@ class ApplicationController extends Controller
             return redirect()->route('vendor.applications.edit', $application);
         }
 
-        $application->load(['documents', 'statusHistories.admin', 'verifications.admin']);
+        $application->load(['documents', 'statusHistories.admin', 'verifications.admin', 'meetingDecision']);
 
         return view('vendor.applications.show', compact('application'));
     }

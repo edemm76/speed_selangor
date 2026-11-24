@@ -9,6 +9,7 @@
     $vendor = $application->vendor;
     $choices = $status->nextForOfficer();
     $selectedStatus = old('status');
+    $decision = $application->meetingDecision;
 
     // Progress tracker: 4 stages. "Tindakan Diperlukan" sits on stage 2, the decision on stage 4.
     $stage = match ($status) {
@@ -22,7 +23,7 @@
         ['label' => $status === \App\Enums\ApplicationStatus::ActionRequired ? 'Tindakan Diperlukan' : 'Dalam Semakan',
          'icon' => $status === \App\Enums\ApplicationStatus::ActionRequired ? 'bi-exclamation-lg' : 'bi-search'],
         ['label' => 'Disahkan', 'icon' => 'bi-patch-check'],
-        ['label' => $status->isFinal() ? $status->label() : 'Keputusan',
+        ['label' => $decision ? $decision->result->label() : ($status->isFinal() ? $status->label() : 'Keputusan'),
          'icon' => $status === \App\Enums\ApplicationStatus::Rejected ? 'bi-x-lg' : 'bi-award'],
     ];
     // Colour of the current stage
@@ -84,6 +85,10 @@
                 <a href="{{ route('admin.verifications.show', $application) }}" class="btn btn-primary btn-sm">
                     <i class="bi bi-clipboard-check"></i> Buka Semakan
                 </a>
+            @elseif ($status === \App\Enums\ApplicationStatus::Verified)
+                <a href="{{ route('admin.meetings.create', $application) }}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-people"></i> Rekod Keputusan Mesyuarat
+                </a>
             @endif
         </div>
     </div>
@@ -93,6 +98,11 @@
             <i class="bi bi-arrow-repeat"></i> Pemohon telah <strong>menghantar semula</strong> permohonan ini pada
             {{ $application->statusHistories->last()->created_at->format('d/m/Y, h:i A') }}.
             Sila <a href="{{ route('admin.verifications.show', $application) }}" class="alert-link">buka semakan</a> untuk menyemak pembetulan.
+        </div>
+    @elseif ($status === \App\Enums\ApplicationStatus::Verified)
+        <div class="alert alert-primary">
+            <i class="bi bi-people"></i> Permohonan ini telah disahkan dan menunggu keputusan mesyuarat.
+            Selepas mesyuarat, klik <a href="{{ route('admin.meetings.create', $application) }}" class="alert-link">Rekod Keputusan Mesyuarat</a>.
         </div>
     @elseif ($status === \App\Enums\ApplicationStatus::ActionRequired)
         <div class="alert alert-warning">
@@ -199,6 +209,10 @@
                 </div>
             </div>
 
+            @if ($decision)
+                @include('partials.meeting-decision', ['decision' => $decision, 'forOfficer' => true])
+            @endif
+
             {{-- Documents --}}
             <div class="card mb-3">
                 <div class="card-header">Dokumen Sokongan</div>
@@ -264,10 +278,25 @@
                                 <i class="bi bi-check2-circle"></i> Kemas Kini Status
                             </button>
                         </form>
+                    @elseif ($status === \App\Enums\ApplicationStatus::Verified)
+                        <p class="small mb-3">
+                            Keputusan bagi permohonan yang telah disahkan dibuat dalam mesyuarat.
+                            Rekod nama mesyuarat, tarikh, pegawai yang menyemak, pelulus, minit dan keputusan.
+                        </p>
+                        <a href="{{ route('admin.meetings.create', $application) }}" class="btn btn-primary w-100">
+                            <i class="bi bi-people"></i> Rekod Keputusan Mesyuarat
+                        </a>
                     @else
                         <p class="text-muted small mb-0">
                             <i class="bi bi-lock"></i>
                             Permohonan ini telah {{ strtolower($status->label()) }}. Status tidak boleh diubah lagi.
+                        </p>
+                    @endif
+
+                    @if ($status === \App\Enums\ApplicationStatus::UnderReview)
+                        <p class="small text-muted mt-3 mb-0">
+                            <i class="bi bi-info-circle"></i> Untuk <strong>Sahkan</strong> atau <strong>Minta Maklumat Tambahan</strong>,
+                            gunakan <a href="{{ route('admin.verifications.show', $application) }}">halaman semakan</a> (senarai semak wajib).
                         </p>
                     @endif
                 </div>

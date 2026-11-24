@@ -88,7 +88,7 @@ class ApplicationController extends Controller
         // Drafts are private to the applicant
         abort_if($application->current_status === ApplicationStatus::Draft, 404);
 
-        $application->load(['vendor', 'documents', 'statusHistories.admin', 'verifications.admin']);
+        $application->load(['vendor', 'documents', 'statusHistories.admin', 'verifications.admin', 'meetingDecision.recordedBy']);
 
         return view('admin.applications.show', compact('application'));
     }
@@ -112,7 +112,7 @@ class ApplicationController extends Controller
             ],
         ], [
             'status.required' => 'Sila pilih status baharu.',
-            'status.in' => 'Status yang dipilih tidak dibenarkan untuk permohonan ini. Sila muat semula halaman.',
+            'status.in' => 'Status yang dipilih tidak dibenarkan di sini. Pengesahan dibuat melalui halaman Semakan dan keputusan melalui Rekod Keputusan Mesyuarat.',
             'remarks.required' => 'Sila tulis catatan supaya pemohon tahu sebabnya.',
             'remarks.max' => 'Catatan terlalu panjang (maksimum 1000 aksara).',
         ]);

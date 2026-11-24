@@ -36,6 +36,7 @@ class Notification extends Model
             'Tindakan Diperlukan' => ['bi-exclamation-triangle', 'danger'],
             'Permohonan Disahkan' => ['bi-patch-check', 'primary'],
             'Permohonan Diluluskan' => ['bi-award', 'success'],
+            'Permohonan Diluluskan dengan Pindaan' => ['bi-award', 'warning'],
             'Permohonan Ditolak' => ['bi-x-circle', 'dark'],
             'Melebihi Tempoh Sasaran' => ['bi-alarm', 'danger'],
             default => ['bi-bell', 'secondary'],

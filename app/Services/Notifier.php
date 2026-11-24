@@ -39,6 +39,34 @@ class Notifier
             return;
         }
 
+        // ---- Final decision from the committee meeting -> full details to the applicant ----
+        $decision = $status->isFinal() ? $application->meetingDecision : null;
+        if ($decision) {
+            $title = match ($decision->result) {
+                \App\Enums\MeetingResult::Lulus => 'Permohonan Diluluskan',
+                \App\Enums\MeetingResult::LulusDenganPindaan => 'Permohonan Diluluskan dengan Pindaan',
+                \App\Enums\MeetingResult::Ditolak => 'Permohonan Ditolak',
+            };
+
+            $message = "Keputusan bagi permohonan {$ref} (\"{$application->project_title}\") telah dibuat dalam "
+                . "{$decision->meeting_title} pada {$decision->meeting_date->format('d/m/Y')}.\n\n"
+                . "Keputusan: {$decision->result->label()}\n"
+                . "Jabatan: {$decision->department}\n"
+                . "Disemak oleh: {$decision->checked_by}\n"
+                . "Diputuskan oleh: {$decision->approver()}";
+
+            if ($decision->amendments) {
+                $message .= "\n\nPindaan yang perlu dibuat: {$decision->amendments}";
+            }
+            if ($decision->reason) {
+                $message .= "\n\nSebab penolakan: {$decision->reason}";
+            }
+
+            self::toVendor($application, $title, $message);
+
+            return;
+        }
+
         // ---- Changes made by an officer -> tell the applicant ----
         $title = match ($status) {
             ApplicationStatus::UnderReview => 'Permohonan Sedang Disemak',

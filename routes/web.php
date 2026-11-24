@@ -104,6 +104,11 @@ Route::prefix('admin')
         Route::get('/applications/{application}/documents/{document}', [Admin\ApplicationController::class, 'document'])
             ->name('applications.document');
 
+        // Committee meeting decision after verification (meeting record, minutes, result)
+        Route::get('/applications/{application}/meeting', [Admin\MeetingController::class, 'create'])->name('meetings.create');
+        Route::post('/applications/{application}/meeting', [Admin\MeetingController::class, 'store'])->name('meetings.store');
+        Route::get('/applications/{application}/meeting/minutes', [Admin\MeetingController::class, 'minutes'])->name('meetings.minutes');
+
         // SSMS-UC-400: verification queue, verify, request more info / forward
         Route::get('/verifications', [Admin\VerificationController::class, 'index'])->name('verifications.index');
         Route::post('/verifications/{application}/start', [Admin\VerificationController::class, 'start'])->name('verifications.start');

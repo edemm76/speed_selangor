@@ -20,6 +20,12 @@ return [
     // Prefix for generated reference numbers, e.g. SS-2026-0001
     'reference_prefix' => 'SS',
 
+    // Committee meeting that decides applications after verification
+    'meeting' => [
+        'department' => env('SPEED_MEETING_DEPARTMENT', 'Jabatan Perancang Bandar'),
+        'title_example' => 'Mesyuarat Jawatankuasa OSC Bil. 1/' . date('Y'),
+    ],
+
     // Uploaded documents
     // 'local' = storage/app/private: files are NOT public, they are only
     // shown through the system after checking who is logged in.
