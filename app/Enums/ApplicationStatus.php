@@ -60,6 +60,41 @@ enum ApplicationStatus: string
         return in_array($this, [self::Draft, self::ActionRequired]);
     }
 
+    /**
+     * Statuses an officer may change this application to (SSMS-UC-300 officer part).
+     * Submitted -> Dalam Semakan -> Tindakan Diperlukan / Disahkan -> Diluluskan / Ditolak.
+     * Draft, Approved and Rejected cannot be changed by the officer.
+     */
+    public function nextForOfficer(): array
+    {
+        return match ($this) {
+            self::Submitted => [self::UnderReview, self::Rejected],
+            self::UnderReview => [self::ActionRequired, self::Verified, self::Rejected],
+            self::ActionRequired => [self::UnderReview, self::Rejected],
+            self::Verified => [self::Approved, self::Rejected],
+            default => [],
+        };
+    }
+
+    /** Short explanation shown next to each choice in the officer's status form */
+    public function officerHint(): string
+    {
+        return match ($this) {
+            self::UnderReview => 'Mula / sambung semakan permohonan',
+            self::ActionRequired => 'Minta pemohon kemukakan maklumat atau dokumen tambahan',
+            self::Verified => 'Maklumat lengkap dan betul, sedia untuk keputusan',
+            self::Approved => 'Luluskan permohonan (keputusan muktamad)',
+            self::Rejected => 'Tolak permohonan (keputusan muktamad)',
+            default => '',
+        };
+    }
+
+    /** The officer must write a remark for these (the applicant needs to know why) */
+    public function needsRemarks(): bool
+    {
+        return in_array($this, [self::ActionRequired, self::Rejected]);
+    }
+
     /** ['draft' => 'Draf', ...] for dropdowns */
     public static function options(): array
     {

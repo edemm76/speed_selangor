@@ -8,36 +8,37 @@
         <p class="text-muted mb-0">Selamat datang, {{ auth('admin')->user()->name }}</p>
     </div>
 
+    {{-- Each card opens the matching list --}}
     <div class="row g-3">
         <div class="col-6 col-lg-3">
-            <div class="card stat-card h-100">
+            <a href="{{ route('admin.applications.index') }}" class="card stat-card h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between text-muted small">
                         Jumlah Permohonan <span class="stat-dot bg-dark"></span>
                     </div>
                     <div class="stat-value">{{ $stats['total'] }}</div>
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-6 col-lg-3">
-            <div class="card stat-card h-100">
+            <a href="{{ route('admin.applications.index', ['status' => 'in_progress']) }}" class="card stat-card h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between text-muted small">
                         Sedang Diproses <span class="stat-dot bg-info"></span>
                     </div>
                     <div class="stat-value">{{ $stats['in_progress'] }}</div>
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-6 col-lg-3">
-            <div class="card stat-card h-100">
+            <a href="{{ route('admin.applications.index', ['status' => 'overdue']) }}" class="card stat-card h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between text-muted small">
                         Melebihi {{ config('speed.target_days') }} Hari <span class="stat-dot bg-danger"></span>
                     </div>
                     <div class="stat-value text-danger">{{ $stats['overdue'] }}</div>
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-6 col-lg-3">
             <a href="{{ route('admin.vendors.index') }}" class="card stat-card h-100">

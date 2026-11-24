@@ -98,7 +98,13 @@
                         <tbody>
                             @forelse ($vendor->applications as $application)
                                 <tr>
-                                    <td class="ps-4 text-nowrap fw-semibold">{{ $application->reference_no ?? '—' }}</td>
+                                    <td class="ps-4 text-nowrap fw-semibold">
+                                        @if ($application->reference_no)
+                                            <a href="{{ route('admin.applications.show', $application) }}" class="text-decoration-none">{{ $application->reference_no }}</a>
+                                        @else
+                                            <span class="text-muted">— (draf)</span>
+                                        @endif
+                                    </td>
                                     <td>{{ $application->project_title }}</td>
                                     <td class="small">{{ $application->permit_type->label() }}</td>
                                     <td class="small text-nowrap">

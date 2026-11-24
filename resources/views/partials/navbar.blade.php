@@ -17,8 +17,8 @@
                     <span class="ss-logo"><i class="bi bi-lightning-charge-fill"></i></span>
                 @endif
                 <span>
-                    <span class="ss-brand-name">{{ config('speed.name') }}</span>
-                    <span class="ss-brand-sub">{{ config('speed.council') }}</span>
+                    <span class="ss-brand-name text-nowrap">{{ config('speed.name') }}</span>
+                    <span class="ss-brand-sub text-nowrap d-lg-none d-xl-block">{{ config('speed.council') }}</span>
                 </span>
             </a>
 
@@ -31,13 +31,16 @@
 
                 {{-- ===================== ADMINISTRATOR ===================== --}}
                 @if ($admin)
-                    <ul class="navbar-nav ss-nav mx-auto">
+                    <ul class="navbar-nav ss-nav mx-auto text-nowrap">
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
                                href="{{ route('admin.dashboard') }}">Papan Pemuka</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.applications.*') ? 'active' : '' }}"
+                               href="{{ route('admin.applications.index') }}">Permohonan</a>
+                        </li>
                         {{-- Links below are filled in by later steps --}}
-                        <li class="nav-item"><a class="nav-link" href="#">Permohonan</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Semakan</a></li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.vendors.*') ? 'active' : '' }}"
@@ -56,7 +59,7 @@
 
                 {{-- ===================== VENDOR / PEMOHON ===================== --}}
                 @elseif ($vendor)
-                    <ul class="navbar-nav ss-nav mx-auto">
+                    <ul class="navbar-nav ss-nav mx-auto text-nowrap">
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('vendor.dashboard') ? 'active' : '' }}"
                                href="{{ route('vendor.dashboard') }}">Papan Pemuka</a>

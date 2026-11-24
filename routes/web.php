@@ -87,6 +87,13 @@ Route::prefix('admin')
     ->group(function () {
         Route::get('/dashboard', [Admin\DashboardController::class, 'index'])->name('dashboard');
 
+        // SSMS-UC-300: all applications, detail, status update
+        Route::get('/applications', [Admin\ApplicationController::class, 'index'])->name('applications.index');
+        Route::get('/applications/{application}', [Admin\ApplicationController::class, 'show'])->name('applications.show');
+        Route::patch('/applications/{application}/status', [Admin\ApplicationController::class, 'updateStatus'])->name('applications.status');
+        Route::get('/applications/{application}/documents/{document}', [Admin\ApplicationController::class, 'document'])
+            ->name('applications.document');
+
         // SSMS-UC-200: applicant list, suspend / reactivate
         Route::get('/vendors', [Admin\VendorController::class, 'index'])->name('vendors.index');
         Route::get('/vendors/{vendor}', [Admin\VendorController::class, 'show'])->name('vendors.show');

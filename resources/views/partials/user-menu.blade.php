@@ -7,7 +7,8 @@
     <button class="btn ss-user-btn dropdown-toggle {{ $profileActive ? 'active' : '' }}" type="button"
             data-bs-toggle="dropdown" aria-expanded="false">
         <i class="bi {{ $icon }} fs-5"></i>
-        <span class="text-start">
+        {{-- Name is hidden on medium screens (992–1199px) so the menu fits on one line --}}
+        <span class="text-start d-lg-none d-xl-inline">
             {{ $name }}<br><small>{{ $subtitle }}</small>
         </span>
     </button>
