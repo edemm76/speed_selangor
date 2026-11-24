@@ -25,6 +25,23 @@ class Notification extends Model
         ];
     }
 
+    /** Bootstrap icon + colour for the list, based on the title */
+    public function icon(): array
+    {
+        return match ($this->title) {
+            'Permohonan Baharu' => ['bi-file-earmark-plus', 'primary'],
+            'Permohonan Berjaya Dihantar' => ['bi-send-check', 'success'],
+            'Permohonan Dihantar Semula' => ['bi-arrow-repeat', 'warning'],
+            'Permohonan Sedang Disemak' => ['bi-search', 'info'],
+            'Tindakan Diperlukan' => ['bi-exclamation-triangle', 'danger'],
+            'Permohonan Disahkan' => ['bi-patch-check', 'primary'],
+            'Permohonan Diluluskan' => ['bi-award', 'success'],
+            'Permohonan Ditolak' => ['bi-x-circle', 'dark'],
+            'Melebihi Tempoh Sasaran' => ['bi-alarm', 'danger'],
+            default => ['bi-bell', 'secondary'],
+        };
+    }
+
     /** Who received this notification */
     public function recipients(): HasMany
     {

@@ -131,17 +131,23 @@ class Application extends Model
      * Change the status AND write a row to application_status_histories.
      * Use this everywhere instead of updating current_status directly.
      * $adminId = null means the vendor made the change.
+     * It also sends the notifications (see App\Services\Notifier).
      */
     public function changeStatus(ApplicationStatus $status, ?string $remarks = null, ?int $adminId = null): ApplicationStatusHistory
     {
         $this->current_status = $status;
         $this->save();
 
-        return $this->statusHistories()->create([
+        $history = $this->statusHistories()->create([
             'status' => $status->value,
             'remarks' => $remarks,
             'updated_by_admin_id' => $adminId,
         ]);
+
+        // [SSMS-UC-500] every status change automatically notifies the other party
+        \App\Services\Notifier::statusChanged($this, $status, $remarks, $adminId);
+
+        return $history;
     }
 
     /**

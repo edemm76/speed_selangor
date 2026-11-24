@@ -48,8 +48,7 @@
                             <a class="nav-link {{ request()->routeIs('admin.vendors.*') ? 'active' : '' }}"
                                href="{{ route('admin.vendors.index') }}">Pemohon</a>
                         </li>
-                        {{-- Link below is filled in by a later step --}}
-                        <li class="nav-item"><a class="nav-link" href="#">Notifikasi</a></li>
+                        @include('partials.notification-bell', ['role' => 'admin', 'user' => $admin])
                     </ul>
 
                     @include('partials.user-menu', [
@@ -71,8 +70,7 @@
                             <a class="nav-link {{ request()->routeIs('vendor.applications.*') ? 'active' : '' }}"
                                href="{{ route('vendor.applications.index') }}">Permohonan Saya</a>
                         </li>
-                        {{-- Link below is filled in by a later step --}}
-                        <li class="nav-item"><a class="nav-link" href="#">Notifikasi</a></li>
+                        @include('partials.notification-bell', ['role' => 'vendor', 'user' => $vendor])
                     </ul>
 
                     @include('partials.user-menu', [

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterController;
@@ -73,6 +74,11 @@ Route::prefix('vendor')
         Route::get('/applications/{application}/resubmit', [Vendor\ApplicationController::class, 'resubmitForm'])->name('applications.resubmit');
         Route::put('/applications/{application}/resubmit', [Vendor\ApplicationController::class, 'resubmit'])->name('applications.resubmit.store');
 
+        // SSMS-UC-500: notifications
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::patch('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.readAll');
+        Route::get('/notifications/{userNotification}', [NotificationController::class, 'show'])->name('notifications.show');
+
         // SSMS-UC-200: own profile
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -109,6 +115,11 @@ Route::prefix('admin')
         Route::get('/vendors/{vendor}', [Admin\VendorController::class, 'show'])->name('vendors.show');
         Route::patch('/vendors/{vendor}/suspend', [Admin\VendorController::class, 'suspend'])->name('vendors.suspend');
         Route::patch('/vendors/{vendor}/activate', [Admin\VendorController::class, 'activate'])->name('vendors.activate');
+
+        // SSMS-UC-500: notifications
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::patch('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.readAll');
+        Route::get('/notifications/{userNotification}', [NotificationController::class, 'show'])->name('notifications.show');
 
         // SSMS-UC-200: own profile
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
