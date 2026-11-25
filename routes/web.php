@@ -104,6 +104,10 @@ Route::prefix('admin')
         Route::get('/applications/{application}/documents/{document}', [Admin\ApplicationController::class, 'document'])
             ->name('applications.document');
 
+        // SSMS-UC-600: application report in PDF (every report is saved)
+        Route::post('/applications/{application}/reports', [Admin\ReportController::class, 'store'])->name('reports.store');
+        Route::get('/reports/{report}', [Admin\ReportController::class, 'show'])->name('reports.show');
+
         // Committee meeting decision after verification (meeting record, minutes, result)
         Route::get('/applications/{application}/meeting', [Admin\MeetingController::class, 'create'])->name('meetings.create');
         Route::post('/applications/{application}/meeting', [Admin\MeetingController::class, 'store'])->name('meetings.store');

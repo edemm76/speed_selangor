@@ -88,7 +88,7 @@ class ApplicationController extends Controller
         // Drafts are private to the applicant
         abort_if($application->current_status === ApplicationStatus::Draft, 404);
 
-        $application->load(['vendor', 'documents', 'statusHistories.admin', 'verifications.admin', 'meetingDecision.recordedBy']);
+        $application->load(['vendor', 'documents', 'statusHistories.admin', 'verifications.admin', 'meetingDecision.recordedBy', 'reports.admin']);
 
         return view('admin.applications.show', compact('application'));
     }

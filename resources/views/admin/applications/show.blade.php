@@ -302,6 +302,37 @@
                 </div>
             </div>
 
+            {{-- SSMS-UC-600: PDF report (each generated report is kept) --}}
+            <div class="card mb-3" id="laporan">
+                <div class="card-header">Laporan</div>
+                <div class="card-body">
+                    <form method="POST" action="{{ route('admin.reports.store', $application) }}" target="_blank">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-navy w-100">
+                            <i class="bi bi-file-earmark-pdf"></i> Muat Turun Laporan (PDF)
+                        </button>
+                    </form>
+                    <div class="form-text">Laporan dibuka dalam tab baharu dan boleh dimuat turun atau dicetak.</div>
+
+                    @if ($application->reports->isNotEmpty())
+                        <div class="small fw-semibold mt-3 mb-1">Laporan yang pernah dijana</div>
+                        <ul class="list-unstyled small mb-0">
+                            @foreach ($application->reports->take(5) as $report)
+                                <li class="d-flex justify-content-between gap-2 py-1 border-top">
+                                    <a href="{{ route('admin.reports.show', $report) }}" target="_blank" rel="noopener">
+                                        <i class="bi bi-file-earmark-pdf"></i> {{ $report->generated_at->format('d/m/Y, h:i A') }}
+                                    </a>
+                                    <span class="text-muted text-truncate">{{ $report->admin?->name }}</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                        @if ($application->reports->count() > 5)
+                            <div class="small text-muted mt-1">+ {{ $application->reports->count() - 5 }} laporan lain</div>
+                        @endif
+                    @endif
+                </div>
+            </div>
+
             {{-- Processing time vs Speed Selangor target --}}
             <div class="card mb-3">
                 <div class="card-header">Tempoh Pemprosesan</div>
