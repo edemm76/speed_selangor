@@ -97,6 +97,21 @@ enum ApplicationStatus: string
         return in_array($this, [self::ActionRequired, self::Rejected]);
     }
 
+    /**
+     * Groups shown to the applicant (dashboard cards and Permohonan Saya tabs).
+     * key => [label, statuses, colour]
+     */
+    public static function vendorGroups(): array
+    {
+        return [
+            'in_progress' => ['Sedang Diproses', [self::Submitted, self::UnderReview, self::Verified], 'info'],
+            'action_required' => ['Tindakan Diperlukan', [self::ActionRequired], 'danger'],
+            'approved' => ['Diluluskan', [self::Approved], 'success'],
+            'rejected' => ['Ditolak', [self::Rejected], 'dark'],
+            'draft' => ['Draf', [self::Draft], 'secondary'],
+        ];
+    }
+
     /** ['draft' => 'Draf', ...] for dropdowns */
     public static function options(): array
     {

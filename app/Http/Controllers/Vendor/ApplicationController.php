@@ -47,14 +47,32 @@ class ApplicationController extends Controller
     }
 
     /** Permohonan Saya: all of this applicant's applications */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $applications = Auth::guard('vendor')->user()
-            ->applications()
-            ->latest('updated_at')
-            ->paginate(10);
+        $vendor = Auth::guard('vendor')->user();
+        $groups = ApplicationStatus::vendorGroups();
+        $filter = array_key_exists($request->query('status'), $groups) ? $request->query('status') : null;
 
-        return view('vendor.applications.index', compact('applications'));
+        $applications = $vendor->applications()
+            ->when($filter, fn ($q) => $q->whereIn('current_status', array_map(fn ($s) => $s->value, $groups[$filter][1])))
+            ->latest('updated_at')
+            ->paginate(10)
+            ->withQueryString();
+
+        // Numbers for the tabs
+        $byStatus = $vendor->applications()
+            ->selectRaw('current_status, count(*) as total')
+            ->groupBy('current_status')
+            ->pluck('total', 'current_status');
+        $counts = collect($groups)->map(fn ($g) => collect($g[1])->sum(fn ($s) => $byStatus[$s->value] ?? 0));
+
+        return view('vendor.applications.index', [
+            'applications' => $applications,
+            'groups' => $groups,
+            'filter' => $filter,
+            'counts' => $counts,
+            'total' => $byStatus->sum(),
+        ]);
     }
 
     /**

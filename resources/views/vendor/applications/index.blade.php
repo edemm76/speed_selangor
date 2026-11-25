@@ -13,8 +13,29 @@
         </a>
     </div>
 
+    {{-- Status tabs with counts --}}
+    <ul class="nav nav-pills ss-tabs mb-3">
+        <li class="nav-item">
+            <a class="nav-link {{ $filter ? '' : 'active' }}" href="{{ route('vendor.applications.index') }}">
+                Semua <span class="badge">{{ $total }}</span>
+            </a>
+        </li>
+        @foreach ($groups as $key => [$label])
+            <li class="nav-item">
+                <a class="nav-link {{ $filter === $key ? 'active' : '' }}" href="{{ route('vendor.applications.index', ['status' => $key]) }}">
+                    {{ $label }} <span class="badge">{{ $counts[$key] }}</span>
+                </a>
+            </li>
+        @endforeach
+    </ul>
+
     <div class="card">
-        @if ($applications->isEmpty())
+        @if ($applications->isEmpty() && $filter)
+            <div class="card-body text-center py-5 text-muted">
+                <i class="bi bi-folder2-open display-6"></i>
+                <p class="mt-2 mb-0">Tiada permohonan dalam kategori ini.</p>
+            </div>
+        @elseif ($applications->isEmpty())
             <div class="card-body text-center py-5">
                 <i class="bi bi-folder2-open display-6 text-muted"></i>
                 <p class="mt-2 mb-3 text-muted">Anda belum mempunyai sebarang permohonan.</p>
