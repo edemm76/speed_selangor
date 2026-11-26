@@ -1,0 +1,7 @@
+Fail untuk demo Semakan (Speed Selangor)
+
+01, 02, 03  -> muat naik semasa pemohon membuat permohonan Ubahsuai Rumah
+04          -> salinan geran BAHARU, dimuat naik semasa Hantar Semula
+05          -> minit mesyuarat, dimuat naik semasa Rekod Keputusan Mesyuarat
+
+Semua dokumen adalah rekaan untuk ujian sahaja.
